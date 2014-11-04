@@ -14,4 +14,7 @@ MANUALLY INSTALL
 2. Install ~/.vimrc        
     
         cd ~/.vim
-        ./install-vimrc.sh
+        ./auto-install.sh
+
+3. Complish all!
+

@@ -3,7 +3,7 @@
 " File_Name__: vimrc                                                                       "
 " Abstract___:                                                                             "
 " Author_____: Randy Huang <randy.hunang@gmail.com>                                        "
-" Version____: 1.0                                                                         "	
+" Version____: 1.0                                                                         "
 " Last_Change: October 31, 2014                                                            "
 " Licence____:                                                                             "
 "                                                                                          "
@@ -61,6 +61,8 @@ set nobackup		" no *~ backup files
 set copyindent		" copy the previous indentation on autoindenting
 set ignorecase		" ignore case when searching
 set smartcase		" ignore case if search pattern is all lowercase, case-sensitive otherwise
+set mouse=a             " all previous modes
+set nowrap              " not to break line
 set wildignore=*.o,*.class,*.pyc		" ignore these files while expanding wild chars
 autocmd! bufwritepost .vimrc source ~/.vimrc	" auto reload vimrc when editing it
 
@@ -82,7 +84,7 @@ syntax on				" enable syntax highlighting
 
 set background=dark 
 set t_Co=256                            " 256 color mod
-colorscheme  wombat256mod  	        " terminal color settings
+colorscheme solarized     	        " terminal color settings
 
 if has("gui_running")			" Set colors and fonts when running in GUI mode
 	set guifont=Osaka-Mono:h20
@@ -152,7 +154,7 @@ map <C-t><C-t> :tabnew<CR>	" new tab
 map <C-t><C-w> :tabclose<CR> 	" close tab
 
 " ========================== Turn Off Search Highlighting ==================================
-nmap <leader>/ :nohl<CR>
+nmap <leader>// :nohl<CR>
 
 " ===================================== Paste Mode =========================================
 " ,p toggles paste mode
@@ -294,29 +296,31 @@ call vundle#begin()
 
 " =============================== Plugin Management ========================================
 " Utility
-Plugin 'gmarik/vundle'  " let Vundle manage Vundle, required
-Plugin 'L9'             " vim-script library
-Plugin 'AutoClose'      " insert matching bracket, paren, brace or quote
-Plugin 'AutoComplPop'   " automatically opens popup menu for completions
-Plugin 'taglist.vim'    " source code browser (supports C/C++, java, perl, python, etc)
-Plugin 'FuzzyFinder'    " buffer/file/command/tag/etc explorer with fuzzy matching
-Plugin 'The-NERD-tree'  " a tree explorer plugin for navigating the filesystem
-Plugin 'SrcExpl'        " a Source code Explorer
-Plugin 'fakeclip'       " pseudo clipboard register for non-GUI version of Vim
-Plugin 'neocomplcache'  " ultimate auto completion system for Vim
-Plugin 'cscope.vim'     " create cscope database and connect to existing proper database automatically.
-Plugin 'Trinity'        " build the trinity of srcexpl, taglist, NERD_tree, conflict with Winmanager
-Plugin 'Tagbar'         " display tags of the current file ordered by scope
-Plugin 'TabBar'         " plugin to add tab bar (derived from miniBufExplorer)
-Plugin 'EasyMotion'     " Vim motions on speed
-Plugin 'Tabular'        " Vim script for text filtering and alignment
-Plugin 'Mark'           " Highlight several words in different colors simultaneously.
+Plugin 'gmarik/vundle'          " let Vundle manage Vundle, required
+Plugin 'L9'                     " vim-script library
+Plugin 'AutoClose'              " insert matching bracket, paren, brace or quote
+Plugin 'AutoComplPop'           " automatically opens popup menu for completions
+Plugin 'taglist.vim'            " source code browser (supports C/C++, java, perl, python, etc)
+Plugin 'FuzzyFinder'            " buffer/file/command/tag/etc explorer with fuzzy matching
+Plugin 'The-NERD-tree'          " a tree explorer plugin for navigating the filesystem
+Plugin 'SrcExpl'                " a Source code Explorer
+Plugin 'fakeclip'               " pseudo clipboard register for non-GUI version of Vim
+Plugin 'neocomplcache'          " ultimate auto completion system for Vim
+Plugin 'cscope.vim'             " create cscope database and connect to existing proper database automatically.
+Plugin 'Trinity'                " build the trinity of srcexpl, taglist, NERD_tree, conflict with Winmanager
+Plugin 'Tagbar'                 " display tags of the current file ordered by scope
+Plugin 'TabBar'                 " plugin to add tab bar (derived from miniBufExplorer)
+Plugin 'EasyMotion'             " Vim motions on speed
+Plugin 'Tabular'                " Vim script for text filtering and alignment
+Plugin 'Lokaltog/vim-powerline' " allow you to create better-looking, more functional vim statuslines
+Plugin 'jreybert/vim-mark'      " highlight several words in different colors simultaneously
 
 " Syntax
-Plugin 'c.vim'          " C/C++ IDE. Write and run programs. Insert statements, idioms, comments etc.
+Plugin 'c.vim'                  " C/C++ IDE. Write and run programs. Insert statements, idioms, comments etc.
 
 " Color Scheme
-Plugin 'wombat256.vim'	" wombat for 256 color xterms
+Plugin 'wombat256.vim'	        " wombat for 256 color xterms
+Plugin 'Solarized'              " Beautiful dual light/dark, selective contrast, GUI/256/16 colorscheme
 " ============================= End Plugin Management ======================================
 
 " All of your Plugins must be added before the following line
@@ -351,17 +355,18 @@ filetype plugin indent on    " required
 " ========================== PLUGINS SETTINGS SECTION ======================================
 " ==========================================================================================
 " ================================= Taglist Plugin =========================================
-nnoremap <silent> <F10> :TlistToggle<CR>                                                        
+nnoremap <silent> <F7> :TlistToggle<CR>                                                        
 let Tlist_WinWidth=40               " the taglist width                                    
 let Tlist_WinHeight=100             " the taglist height                                   
 let Tlist_Enable_Fold_Column=1      " dispaly the fold column 
-let Tlist_Display_Prototype=1	      " show the prototype                                 
+let Tlist_Display_Prototype=1	    " show the prototype                                 
 let Tlist_Auto_HighLight_Tag=1      " automatically highlight the current tag in the taglist 
 let Tlist_Exit_OnlyWindow=1         " close vim if the taglist the only window               
 let Tlist_File_Fold_Auto_Close=1    " close tag folds for inactive buffers
 let Tlist_Use_Right_Window=0        " open the vertically split taglist window on the left side. 
 let Tlist_Show_One_File=1           " display the tags for only one file in the taglist window
-let Tlist_Use_SingleClick=1	      " press click one time to tag location, default is 0 (twice)
+let Tlist_Use_SingleClick=1	    " press click one time to tag location, default is 0 (twice)
+let Tlist_Ctags_Cmd="/usr/local/bin/ctags" " set Ctags PATH
 
 " ================================= Cscope Plugin ==========================================
 if has("cscope")
@@ -381,16 +386,16 @@ endif
 
 " ================================ Triniry Plugin ==========================================
 " Triniry + Source Explorer + TagList + NERD Tree
-nmap <F8>   :TrinityToggleAll<CR>		" open all the three plugins on the same time
-nmap <F9>   :TrinityToggleSourceExplorer<CR>	" open the srcexpl.vim separately
-nmap <F10>  :TrinityToggleTagList<CR>		" open the taglist.vim separately
-nmap <F11>  :TrinityToggleNERDTree<CR>		" open the NERD_tree.vim separately
+nmap <F5>  :TrinityToggleAll<CR>		" open all the three plugins on the same time
+nmap <F6>  :TrinityToggleSourceExplorer<CR>	" open the srcexpl.vim separately
+nmap <F7>  :TrinityToggleTagList<CR>		" open the taglist.vim separately
+nmap <F8>  :TrinityToggleNERDTree<CR>		" open the NERD_tree.vim separately
 
-" ============================= Source Explorer Plugin =====================================                                       
-nmap <F9> :SrcExplToggle<CR> 		" the switch of the Source Explorer                                   
+" ============================= Source Explorer Plugin ===================================== 
+nmap <F6> :SrcExplToggle<CR> 		" the switch of the Source Explorer                                   
 let g:SrcExpl_winHeight=8 		" set the height of Source Explorer window 
-let g:SrcExpl_refreshTime=100  	" set 100 ms for refreshing the Source Explorer                             
-let g:SrcExpl_jumpKey="<ENTER>" 	" set <Enter> key to jump into the exact definition context        
+let g:SrcExpl_refreshTime=100  	        " set 100 ms for refreshing the Source Explorer
+let g:SrcExpl_jumpKey="<ENTER>" 	" set <Enter> key to jump into the exact definition context
 let g:SrcExpl_gobackKey="<SPACE>"	" set <Space> key for back from the definition context 
          
 " In order to avoid conflicts, the Source Explorer should know what plugins 
@@ -419,7 +424,39 @@ let g:SrcExpl_updateTagsCmd="ctags --sort=foldcase -R ."
 let  g:C_UseTool_cmake='yes' 
 let  g:C_UseTool_doxygen='yes' 
 
-" ==================================== EasyMotion == ======================================= 
+" ==================================== EasyMotion ========================================== 
 " The default leader has been changed to <Leader><Leader> 
 " to avoid conflicts with other plugins you may have installed.
 let g:EasyMotion_leader_key = 'f'
+
+" ======================================== Tagbar ========================================== 
+nmap <silent> <F4> :TagbarToggle<CR>
+
+" ======================================== Mark ============================================ 
+let g:mwDefaultHighlightingPalette = 'extended' " switch to a richer palette of up to 18 colors
+let g:mwDefaultHighlightingNum = 9              " Additional colors up to 9
+nmap <silent> <unique> <leader>hh <Plug>MarkSet
+vmap <silent> <unique> <leader>hh <Plug>MarkSet
+nmap <silent> <unique> <leader>hc <Plug>MarkClear
+vmap <silent> <unique> <leader>hc <Plug>MarkClear
+nmap <silent> <unique> <leader>hr <Plug>MarkRegex
+vmap <silent> <unique> <leader>hr <Plug>MarkRegex 
+
+" ================================== Powerline (vim) ========================================
+let g:Powerline_symbols='fancy'                 " enable fancy symbol in powerline
+let g:Powerline_colorscheme='solarized256'      " set powerline colorscheme
+set fillchars+=stl:\ ,stlnc:\                   " disable statusline fillchars
+
+" ================================== The NERD_tree ==========================================
+nmap <silent> <F8> :NERDTreeToggle<CR>
+let NERDTreeSortOrder=  ['\/$', '\.java$', '\.c$', '\.cpp$', '\.h$', '*']     " sort the nodes in the tree
+let NERDTreeWinSize=30              " set the windown size when the NERD tree is opend
+let NERDTreeWinPos="right"          " put the NERD tree right window
+let NERDTreeShowHidden=1            " display hidden on startup
+let NERDTreeMinimalUI=1             " disable display of the 'Bookmarks' label and 'Press ? for help' text
+let NERDTreeAutoDeleteBuffer=1      " auto delete the file associated with buffer
+let NERDTreeShowBookmarks=1         " display the bookmarks table on startup
+let NERDTreeHighlightCursorline=1   " highlight the current cursor line
+let NERDTreeQuitOnOpen=1            " close the tree windown after opening a file
+let NERDTreeCaseSensitiveSort=0     " tell the NERD tree whether to be case sensitive or not when sorting nodes
+let NERDChristmasTree=1             " tell the NERD tree to make itself colorful and pretty

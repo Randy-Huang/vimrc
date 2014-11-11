@@ -1,0 +1,1 @@
+/home/randy-huang/.vim/bundle/Solarized/colors/solarized.vim

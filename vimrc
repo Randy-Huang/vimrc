@@ -63,13 +63,29 @@ set ignorecase		" ignore case when searching
 set smartcase		" ignore case if search pattern is all lowercase, case-sensitive otherwise
 set mouse=a             " all previous modes
 set nowrap              " not to break line
-set wildignore=*.o,*.class,*.pyc		" ignore these files while expanding wild chars
+set hidden              " when switch buffer not to warn except exist Vim
 autocmd! bufwritepost .vimrc source ~/.vimrc	" auto reload vimrc when editing it
+
+" =========================== Ignore Files When Completion==================================
+" Enable enhanced command line completion.
+set wildmenu wildmode=list:full
+
+" Ignore these filenames during enhanced command line completion.
+set wildignore+=*.aux,*.out,*.toc                   " LaTeX intermediate files
+set wildignore+=*.jpg,*.bmp,*.gif                   " binary images
+set wildignore+=*.luac                              " Lua byte code
+set wildignore+=*.o,*.obj,*.exe,*.manifest    " compiled object files
+set wildignore+=*.pyc                               " Python byte code
+set wildignore+=*.spl                               " compiled spelling word lists
+set wildignore+=*.swp                               " Vim swap files
+set wildignore+=*.zip                               " compression files
+set wildignore+=*/tmp/*	                            " tmp files
+set wildignore+=*.dll,*.so                          " shared library
 
 " ================================== TAB Settings ==========================================
 set smarttab			" insert tabs on the start of a line according to context
 set expandtab       	        " replace <TAB> with spaces
-set softtabstop=4 
+set softtabstop=4                       
 set shiftwidth=4
 au FileType Makefile set noexpandtab
 
@@ -98,7 +114,6 @@ endif
 set ffs=unix,dos,mac 		        " Use Unix as the standard file type
 
 " =================================== Status Line ==========================================
-" status line 
 set laststatus=2
 set statusline=\ %{HasPaste()}%<%-15.25(%f%)%m%r%h\ %w\ \ 
 set statusline+=\ \ \ [%{&ff}/%Y] 
@@ -127,7 +142,7 @@ autocmd FileType c,cpp,cc  set cindent comments=sr:/*,mb:*,el:*/,:// cino=>s,e0,
 " ==========================================================================================
 " ================================ General Settings ========================================
 map <leader>r :call Replace()<CR>		" replace the current word in all opened buffers
-map <leader>cc :botright cope<CR> 		" open the error console
+map <leader>e :botright cope<CR> 		" open the error console
 map <leader>] :cn<CR>				" move to next error
 map <leader>[ :cp<CR>		        	" move to the prev error
 
@@ -138,10 +153,15 @@ let mapleader=","
 let g:mapleader=","
 
 " =============================== Move Around Splits =======================================
-nmap <C-J> <C-W>j		" move to and maximize the below split 
-nmap <C-K> <C-W>k		" move to and maximize the above split 
-nmap <C-H> <C-W>h        	" move to and maximize the left split 
-nmap <C-L> <C-W>l	        " move to and maximize the right split  
+" Move function
+nmap <C-J> <C-W>j       	" move to the below split 
+nmap <C-K> <C-W>k       	" move to the above split 
+nmap <C-H> <C-W>h        	" move to the left split 
+nmap <C-L> <C-W>l	        " move to the right split  
+
+" Split display windown size
+nmap <unique> <silent> <Leader>h <C-W>_
+nmap <unique> <silent> <Leader>j <C-W><BAR>
 set wmw=0                     	" set the min width of a window to 0 so we can maximize others 
 set wmh=0                     	" set the min height of a window to 0 so we can maximize others
 
@@ -242,10 +262,10 @@ au BufNewFile,BufRead,BufEnter *.cpp,*.hpp set omnifunc=omni#cpp#complete#Main
 
 " Use syntax complete if nothing else available
 if has("autocmd") && exists("+omnifunc")
-  autocmd Filetype *
-              \	if &omnifunc == "" |
-              \		setlocal omnifunc=syntaxcomplete#Complete |
-              \	endif
+    autocmd Filetype *
+    \ if &omnifunc == "" |
+    \     setlocal omnifunc=syntaxcomplete#Complete |
+    \ endif
 endif
 
 set cot-=preview "disable doc preview in omnicomplete
@@ -296,24 +316,28 @@ call vundle#begin()
 
 " =============================== Plugin Management ========================================
 " Utility
-Plugin 'gmarik/vundle'          " let Vundle manage Vundle, required
-Plugin 'L9'                     " vim-script library
-Plugin 'AutoClose'              " insert matching bracket, paren, brace or quote
-Plugin 'AutoComplPop'           " automatically opens popup menu for completions
-Plugin 'taglist.vim'            " source code browser (supports C/C++, java, perl, python, etc)
-Plugin 'FuzzyFinder'            " buffer/file/command/tag/etc explorer with fuzzy matching
-Plugin 'The-NERD-tree'          " a tree explorer plugin for navigating the filesystem
-Plugin 'SrcExpl'                " a Source code Explorer
-Plugin 'fakeclip'               " pseudo clipboard register for non-GUI version of Vim
-Plugin 'neocomplcache'          " ultimate auto completion system for Vim
-Plugin 'cscope.vim'             " create cscope database and connect to existing proper database automatically.
-Plugin 'Trinity'                " build the trinity of srcexpl, taglist, NERD_tree, conflict with Winmanager
-Plugin 'Tagbar'                 " display tags of the current file ordered by scope
-Plugin 'TabBar'                 " plugin to add tab bar (derived from miniBufExplorer)
-Plugin 'EasyMotion'             " Vim motions on speed
-Plugin 'Tabular'                " Vim script for text filtering and alignment
-Plugin 'Lokaltog/vim-powerline' " allow you to create better-looking, more functional vim statuslines
-Plugin 'jreybert/vim-mark'      " highlight several words in different colors simultaneously
+Plugin 'gmarik/vundle'              " let Vundle manage Vundle, required
+Plugin 'L9'                         " vim-script library
+Plugin 'AutoClose'                  " insert matching bracket, paren, brace or quote
+Plugin 'AutoComplPop'               " automatically opens popup menu for completions
+Plugin 'taglist.vim'                " source code browser (supports C/C++, java, perl, python, etc)
+Plugin 'FuzzyFinder'                " buffer/file/command/tag/etc explorer with fuzzy matching
+Plugin 'The-NERD-tree'              " a tree explorer plugin for navigating the filesystem
+Plugin 'SrcExpl'                    " a Source code Explorer
+Plugin 'fakeclip'                   " pseudo clipboard register for non-GUI version of Vim
+Plugin 'neocomplcache'              " ultimate auto completion system for Vim
+Plugin 'cscope.vim'                 " create cscope database and connect to existing proper database automatically.
+Plugin 'Trinity'                    " build the trinity of srcexpl, taglist, NERD_tree, conflict with Winmanager
+Plugin 'Tagbar'                     " display tags of the current file ordered by scope
+Plugin 'TabBar'                     " plugin to add tab bar (derived from miniBufExplorer)
+Plugin 'EasyMotion'                 " Vim motions on speed
+Plugin 'Tabular'                    " Vim script for text filtering and alignment
+Plugin 'jreybert/vim-mark'          " highlight several words in different colors simultaneously
+Plugin 'lookupfile'	            " Lookup files using Vim7 ins-completion
+Plugin 'genutils'                   " General utility functions
+Plugin 'ctrlp.vim'	            " Fuzzy file, buffer, MRU, and tag finder with regexp support.
+Plugin 'bling/vim-airline'          " Lean & mean status/tabline for vim that's light as air
+Plugin 'tpope/vim-fugitive'         " display git branch (airline git other plugin)
 
 " Syntax
 Plugin 'c.vim'                  " C/C++ IDE. Write and run programs. Insert statements, idioms, comments etc.
@@ -321,6 +345,10 @@ Plugin 'c.vim'                  " C/C++ IDE. Write and run programs. Insert stat
 " Color Scheme
 Plugin 'wombat256.vim'	        " wombat for 256 color xterms
 Plugin 'Solarized'              " Beautiful dual light/dark, selective contrast, GUI/256/16 colorscheme
+
+" Not Use Plgin (Maybe other similar plugin seems to be more useful)
+" Plugin 'Lokaltog/vim-powerline'     " allow you to create better-looking, more functional vim statuslines
+" Plugin 'fholgado/minibufexpl.vim'   " elegant buffer explorer - takes very little screen space
 " ============================= End Plugin Management ======================================
 
 " All of your Plugins must be added before the following line
@@ -380,7 +408,7 @@ function CSBuild()
         call CsGenDB()
         
         " Back to work directory
-"        silent exe 'cd '. s:CURDIR
+"         silent exe 'cd '. s:CURDIR
         echohl Title | echom 'Update DB: '. s:CSCOPE_DB | echohl None
     else
         echohl WarningMsg | echom 'No cscope database!!!' | echohl None
@@ -599,13 +627,8 @@ let g:SrcExpl_updateTagsCmd="ctags --sort=foldcase -R ."
 
 " ================================ c.vim (C/C++ IDE) ======================================= 
 " To enable the tools for cmake or doxygen
-let  g:C_UseTool_cmake='yes' 
-let  g:C_UseTool_doxygen='yes' 
-
-" ==================================== EasyMotion ========================================== 
-" The default leader has been changed to <Leader><Leader> 
-" to avoid conflicts with other plugins you may have installed.
-let g:EasyMotion_leader_key = 'f'
+let g:C_UseTool_cmake='yes' 
+let g:C_UseTool_doxygen='yes' 
 
 " ======================================== Tagbar ========================================== 
 nmap <silent> <F4> :TagbarToggle<CR>
@@ -621,9 +644,19 @@ nmap <silent> <unique> <leader>hr <Plug>MarkRegex
 vmap <silent> <unique> <leader>hr <Plug>MarkRegex 
 
 " ================================== Powerline (vim) ========================================
-let g:Powerline_symbols='fancy'                 " enable fancy symbol in powerline
-let g:Powerline_colorscheme='solarized256'      " set powerline colorscheme
-set fillchars+=stl:\ ,stlnc:\                   " disable statusline fillchars
+" let g:Powerline_symbols='fancy'                 " enable fancy symbol in powerline
+" let g:Powerline_colorscheme='solarized256'      " set powerline colorscheme
+" set fillchars+=stl:\ ,stlnc:\                   " disable statusline fillchars
+
+" ====================================== Airline ============================================
+let g:airline_powerline_fonts=1                   " enable powerline fonts
+let g:airline#extensions#tabline#enabled=1        " enable tabline
+let g:airline#extensions#tabline#left_sep=''      " separator symbol used in current buffer for tabline
+let g:airline#extensions#tabline#left_alt_sep='|' " separator symbol used in not active buffer for tabline
+let g:airline#extensions#tabline#buffer_nr_show=1 " display buffer number in tabilne
+let g:airline_theme='dark'                        " airline color theme
+nnoremap [b :bp<CR>
+nnoremap ]b :bn<CR>
 
 " ================================== The NERD_tree ==========================================
 nmap <silent> <F8> :NERDTreeToggle<CR>
@@ -638,13 +671,68 @@ let g:NERDTreeHighlightCursorline=1   " highlight the current cursor line
 let g:NERDTreeQuitOnOpen=1            " close the tree windown after opening a file
 let g:NERDTreeCaseSensitiveSort=0     " tell the NERD tree whether to be case sensitive or not when sorting nodes
 let g:NERDChristmasTree=1             " tell the NERD tree to make itself colorful and pretty
+let g:NERDTreeChDirMode=2             " except that the CWD is changed whenever the tree root is changed
+function! NTFinderP()
+    "" Check if NERDTree is open
+    if exists("t:NERDTreeBufName")
+        let s:ntree = bufwinnr(t:NERDTreeBufName)
+    else
+        let s:ntree = -1
+    endif
+    if (s:ntree != -1)
+        "" If NERDTree is open, close it.
+        :NERDTreeClose
+    else
+        "" Try to open a :Rtree for the rails project
+        if exists(":Rtree")
+            "" Open Rtree (using rails plugin, it opens in project dir)
+            :Rtree
+        else
+            "" Open NERDTree in the file path
+            :NERDTreeFind
+        endif
+    endif
+endfunction
 
-" ===================================== TabBar ==============================================
-let g:Tb_MaxSize=3                  " TabBar window display size
-let g:Tb_TabWrap=1                  " let tab dispaly context can change Line
+" =======[M@/G]============================== TabBar ==============================================
+let g:Tb_MaxSize=4                  " TabBar window display size
+let g:Tb_TabWra=1                   " let tab dispaly context can change Line
 
 " ================================== FuzzyFinder ============================================
 map <leader>F :FufFile<CR>  
 map <leader>f :FufTaggedFile<CR>     
 map <leader>g :FufTag<CR>       
 map <leader>b :FufBuffer<CR>
+
+" ===================================== CtrlP ===============================================
+let g:ctrlp_clear_cache_on_exit=0               " not to clean up cache after vim
+let g:ctrlp_mruf_max=500                        " set the number of recently opend files 
+let g:ctrlp_max_files=0                         " enlarge cache index file numbers to prevent
+                                                " lost file when in the process of search; 
+                                                " 0 is not to restrict file numbers
+let g:ctrlp_working_path_mode='rw'
+" speed up index file search
+let g:ctrlp_user_command={
+    \ 'types': {
+        \ 1: ['.git', 'cd %s && git ls-files -c -o --exclude-standard'],
+        \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+        \ },
+        \ 'fallback': 'find %s -type f'
+    \ }
+" Ingore not useful files when in search files
+let g:ctrlp_custom_ignore={                   
+    \ 'dir': '\v[\/]\.(git|hg|svn)$',
+    \ 'file': '\v\.(log|jpg|png|jpeg|o|a|ko|so|obj|dll|exe)$',
+    \ 'link': '',
+    \ }
+
+" ==================================== Ctags ===============================================
+set tags=tags   " set tags file existed diectory path (tags' current directory path)
+set autochdir   " set working dircetory of curren file be edited is the current working dircetory in Vim
+
+
+
+
+
+
+

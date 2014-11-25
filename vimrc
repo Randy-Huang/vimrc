@@ -1,16 +1,17 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"                                                                                          "
+                                                                                           "
 " File_Name__: vimrc                                                                       "
 " Abstract___:                                                                             "
 " Author_____: Randy Huang <randy.hunang@gmail.com>                                        "
-" Version____: 1.0                                                                         "
-" Last_Change: October 31, 2014                                                            "
+" Version____: 3.0                                                                         "
+" Last_Change: November 18, 2014                                                           "
 " Licence____:                                                                             "
 "                                                                                          "
 " Sections:										   "
 "    -> INSTALL VUNDLE AUTOMATICALLY							   "
 "    -> GENERAL SETTINGS								   "
-"	- VIM User Interface								   "
+"	- VIM User Interface                                                               "
+"	- Ignore Files When Completion                                                     "
 "	- TAB Settings									   "
 "	- Disable Sound Errors								   "
 "	- Colors Settings                     						   "
@@ -31,11 +32,11 @@
 let iCanHazVundle=1
 let vundle_readme=expand('~/.vim/bundle/Vundle.vim/README.md')
 if !filereadable(vundle_readme)
-  echo "Installing Vundle.."
-  echo ""
-  silent !mkdir -p ~/.vim/bundle
-  silent !git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
-  let iCanHazVundle=0
+    echo "Installing Vundle.."
+    echo ""
+    silent !mkdir -p ~/.vim/bundle
+    silent !git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+    let iCanHazVundle=0
 endif
 
 
@@ -64,6 +65,7 @@ set smartcase		" ignore case if search pattern is all lowercase, case-sensitive 
 set mouse=a             " all previous modes
 set nowrap              " not to break line
 set hidden              " when switch buffer not to warn except exist Vim
+set updatetime=500      " update after 500ms later
 autocmd! bufwritepost .vimrc source ~/.vimrc	" auto reload vimrc when editing it
 
 " =========================== Ignore Files When Completion==================================
@@ -74,7 +76,7 @@ set wildmenu wildmode=list:full
 set wildignore+=*.aux,*.out,*.toc                   " LaTeX intermediate files
 set wildignore+=*.jpg,*.bmp,*.gif                   " binary images
 set wildignore+=*.luac                              " Lua byte code
-set wildignore+=*.o,*.obj,*.exe,*.manifest    " compiled object files
+set wildignore+=*.o,*.obj,*.exe,*.manifest          " compiled object files
 set wildignore+=*.pyc                               " Python byte code
 set wildignore+=*.spl                               " compiled spelling word lists
 set wildignore+=*.swp                               " Vim swap files
@@ -103,12 +105,12 @@ set t_Co=256                            " 256 color mod
 colorscheme solarized     	        " terminal color settings
 
 if has("gui_running")			" Set colors and fonts when running in GUI mode
-	set guifont=Osaka-Mono:h20
-	set background=dark 
-	set guioptions-=T
-        set guioptions+=e
-	set guitablabel=%M\ %t
-	highlight CursorLine guibg=#003853 ctermbg=24 gui=none cterm=none
+    set guifont=Osaka-Mono:h20
+    set background=dark 
+    set guioptions-=T
+    set guioptions+=e
+    set guitablabel=%M\ %t
+    highlight CursorLine guibg=#003853 ctermbg=24 gui=none cterm=none
 endif
 
 set ffs=unix,dos,mac 		        " Use Unix as the standard file type
@@ -140,17 +142,43 @@ autocmd FileType c,cpp,cc  set cindent comments=sr:/*,mb:*,el:*/,:// cino=>s,e0,
 " ==========================================================================================
 " ================================= USEFUL SHORTCUTS =======================================
 " ==========================================================================================
-" ================================ General Settings ========================================
-map <leader>r :call Replace()<CR>		" replace the current word in all opened buffers
-map <leader>e :botright cope<CR> 		" open the error console
-map <leader>] :cn<CR>				" move to next error
-map <leader>[ :cp<CR>		        	" move to the prev error
-
 " ================================= Leader Settings ========================================
-" With a map leader it's possible to do extra key combinations
-" like <leader>w saves the current file
+" The most things is mapleader have to put in any mappings up the settings
 let mapleader=","
 let g:mapleader=","
+
+" ================================ General Settings ========================================
+nmap <leader>r :call Replace()<CR>		" replace the current word in all opened buffers
+
+" ================================ QuickFix Mapping ========================================
+nmap <unique> <F3> :call QFixToggle(1)<CR>  " open the error console
+nmap <unique> <leader>co :colder<CR>        " display older error list       
+nmap <unique> <leader>cn :cnewer<CR>        " display newer error list
+nmap <unique> <leader>[ :cprevious<CR>      " move to the previous error
+nmap <unique> <leader>] :cnext<CR>          " move to the next error
+command! -bang -nargs=? QFix call QFixToggle(<bang>0)
+
+function! QFixToggle(forced)
+    if exists("g:qfix_win") && a:forced != 0
+        cclose
+    else
+        if exists("g:my_quickfix_win_height")
+            execute "copen ".g:my_quickfix_win_height
+        else
+            copen
+        endif
+    endif
+endfunction
+
+augroup QFixToggle
+    autocmd!
+    autocmd BufWinEnter quickfix let g:qfix_win = bufnr("$")
+    autocmd BufWinLeave * if exists("g:qfix_win") && expand("<abuf>") == g:qfix_win | unlet! g:qfix_win | endif
+augroup END
+
+" ================================ Grep Key Mapping ========================================
+" Enable to fast to search the highlight word with mouse arrow in current file
+nmap <leader>lv :lv /<c-r>=expand("<cword>")<cr>/ %<cr>:lw<cr>
 
 " =============================== Move Around Splits =======================================
 " Move function
@@ -160,8 +188,8 @@ nmap <C-H> <C-W>h        	" move to the left split
 nmap <C-L> <C-W>l	        " move to the right split  
 
 " Split display windown size
-nmap <unique> <silent> <Leader>h <C-W>_
-nmap <unique> <silent> <Leader>j <C-W><BAR>
+nmap <unique> <leader>h <C-W>_
+nmap <unique> <leader>j <C-W><BAR>
 set wmw=0                     	" set the min width of a window to 0 so we can maximize others 
 set wmh=0                     	" set the min height of a window to 0 so we can maximize others
 
@@ -215,7 +243,7 @@ inoremap <C-u>5 <esc>yypVr^A
 
 " =============================== Other Useful Shortcuts ===================================
 " Tip #382: Search for <cword> and replace with input() in all open buffers 
- fun! Replace() 
+fun! Replace() 
     let s:word = input("Replace " . expand('<cword>') . " with:") 
     :exe 'bufdo! %s/\<' . expand('<cword>') . '\>/' . s:word . '/ge' 
     :unlet! s:word 
@@ -224,11 +252,11 @@ endfun
 " Restore cursor to file position in previous editing session
 " Return to last edit position when opening files 
 autocmd  BufReadPost * 
-		\ if line("'\"") > 0|if line("'\"") <= line("$") |
-		\ exe("norm '\"") |
-		\ else|exe "norm $" |
-		\ endif|endif
-		
+    \ if line("'\"") > 0 | if line("'\"") <= line("$") |
+    \ exe("norm '\"") |
+    \ else | exe "norm $" |
+    \ endif | endif
+	
 " Remember info about open buffers on close		
 set viminfo='10,\"100,:20,%,n~/.viminfo
 
@@ -242,11 +270,11 @@ map <C-[> <ESC>:po<CR>
 " ,g generates the header guard
 map <leader>g :call IncludeGuard()<CR>
 fun! IncludeGuard()
-   let basename = substitute(bufname(""), '.*/', '', '')
-   let guard = '_' . substitute(toupper(basename), '\.', '_', "H")
-   call append(0, "#ifndef " . guard)
-   call append(1, "#define " . guard)
-   call append( line("$"), "#endif // for #ifndef " . guard)
+    let basename = substitute(bufname(""), '.*/', '', '')
+    let guard = '_' . substitute(toupper(basename), '\.', '_', "H")
+    call append(0, "#ifndef " . guard)
+    call append(1, "#define " . guard)
+    call append( line("$"), "#endif // for #ifndef " . guard)
 endfun
 
 " Enable omni completion. (Ctrl-X Ctrl-O)
@@ -268,7 +296,8 @@ if has("autocmd") && exists("+omnifunc")
     \ endif
 endif
 
-set cot-=preview "disable doc preview in omnicomplete
+" Disable doc preview in omnicomplete
+set cot-=preview 
 
 " Make CSS omnicompletion work for SASS and SCSS
 autocmd BufNewFile,BufRead *.scss             set ft=scss.css
@@ -284,21 +313,21 @@ set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,big5,gb2312,latin1
 
 fun! ViewUTF8()
-	set encoding=utf-8                                  
-	set termencoding=big5
+    set encoding=utf-8                                  
+    set termencoding=big5
 endfun
 
 fun! UTF8()
-	set encoding=utf-8                                  
-	set termencoding=big5
-	set fileencoding=utf-8
-	set fileencodings=ucs-bom,big5,utf-8,latin1
+    set encoding=utf-8                                  
+    set termencoding=big5
+    set fileencoding=utf-8
+    set fileencodings=ucs-bom,big5,utf-8,latin1
 endfun
 
 fun! Big5()
-	set encoding=big5
-	set encoding=big5
-	set fileencoding=big5
+    set encoding=big5
+    set encoding=big5
+    set fileencoding=big5
 endfun
 
 
@@ -321,9 +350,8 @@ Plugin 'L9'                         " vim-script library
 Plugin 'AutoClose'                  " insert matching bracket, paren, brace or quote
 Plugin 'AutoComplPop'               " automatically opens popup menu for completions
 Plugin 'taglist.vim'                " source code browser (supports C/C++, java, perl, python, etc)
-Plugin 'FuzzyFinder'                " buffer/file/command/tag/etc explorer with fuzzy matching
 Plugin 'The-NERD-tree'              " a tree explorer plugin for navigating the filesystem
-Plugin 'SrcExpl'                    " a Source code Explorer
+Plugin 'SrcExpl'                    " a source code explorer
 Plugin 'fakeclip'                   " pseudo clipboard register for non-GUI version of Vim
 Plugin 'neocomplcache'              " ultimate auto completion system for Vim
 Plugin 'cscope.vim'                 " create cscope database and connect to existing proper database automatically.
@@ -338,15 +366,19 @@ Plugin 'genutils'                   " General utility functions
 Plugin 'ctrlp.vim'	            " Fuzzy file, buffer, MRU, and tag finder with regexp support.
 Plugin 'bling/vim-airline'          " Lean & mean status/tabline for vim that's light as air
 Plugin 'tpope/vim-fugitive'         " display git branch (airline git other plugin)
+Plugin 'a.vim'	                    " alternate files quickly (.c --> .h etc)
+Plugin 'EasyGrep'	            " fast and easy find and replace across multiple files
 
-" Syntax
-Plugin 'c.vim'                  " C/C++ IDE. Write and run programs. Insert statements, idioms, comments etc.
+" Syntaxi
+Plugin 'c.vim'                      " C/C++ IDE. Write and run programs. Insert statements, idioms, comments etc.
 
 " Color Scheme
 Plugin 'wombat256.vim'	        " wombat for 256 color xterms
 Plugin 'Solarized'              " Beautiful dual light/dark, selective contrast, GUI/256/16 colorscheme
 
 " Not Use Plgin (Maybe other similar plugin seems to be more useful)
+" Plugin 'FuzzyFinder'                " buffer/file/command/tag/etc explorer with fuzzy matching
+" Plugin 'The-NERD-tree'              " a tree explorer plugin for navigating the filesystem
 " Plugin 'Lokaltog/vim-powerline'     " allow you to create better-looking, more functional vim statuslines
 " Plugin 'fholgado/minibufexpl.vim'   " elegant buffer explorer - takes very little screen space
 " ============================= End Plugin Management ======================================
@@ -407,8 +439,8 @@ function CSBuild()
         silent exe 'cd '. SRC_ROOT
         call CsGenDB()
         
-        " Back to work directory
-"         silent exe 'cd '. s:CURDIR
+"       Back to work directory
+"       silent exe 'cd '. s:CURDIR
         echohl Title | echom 'Update DB: '. s:CSCOPE_DB | echohl None
     else
         echohl WarningMsg | echom 'No cscope database!!!' | echohl None
@@ -438,80 +470,80 @@ endf
 " when it was compiled.  If it wasn't, time to recompile vim... 
 if has("cscope")
 
-    """"""""""""" Standard cscope/vim boilerplate
-    " cscope bin PATH
+""""""""""""" Standard cscope/vim boilerplate
+"   cscope bin PATH
     set csprg=/usr/bin/cscope
 
-    " use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
-    " set cscopetag
+"   use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
+"   set cscopetag
 
-    " check cscope for definition of a symbol before checking ctags: set to 1
-    " if you want the reverse search order.
+"   check cscope for definition of a symbol before checking ctags: set to 1
+"   if you want the reverse search order.
     set csto=0
     set cst
     set nocsverb
 
-    " add the database pointed to by environment variable 
+"   Add the database pointed to by environment variable 
     let s:CURDIR = getcwd()
     let s:CSCOPE_DB = getcwd()
-    while (getcwd() != '/')
-        "echo 'Try search: '.getcwd()
-        if filereadable("cscope.out")
-            let s:CSCOPE_DB_EXIST = 1
-            let s:CSCOPE_DB = getcwd() . "/cscope.out"
-            silent exe 'cs add '. s:CSCOPE_DB
-            break 
-        endif
-        " look for parent folder
-        silent cd ..
-    endwhile
+""  while (getcwd() != '/')
+"       echo 'Try search: '.getcwd()
+""      if filereadable("cscope.out")
+""          let s:CSCOPE_DB_EXIST = 1
+""          let s:CSCOPE_DB = getcwd() . "/cscope.out"
+""          silent exe 'cs add '. s:CSCOPE_DB
+""          break 
+""      endif
+"           Look for parent folder
+""          silent cd ..
+""  endwhile
 
     if !exists("s:CSCOPE_DB_EXIST")
         silent exe 'cd '. s:CURDIR
     endif 
     
     set csverb
-    set cscopequickfix=s-,g-,c-,d-,t-,e-,f-,i-
 
-    " show msg when any other cscope db added
+"   Use QuickFix to display cscope search results according parameters
+    set cscopequickfix=s-,g-,c-,d-,t-,e-,f-,i-  
+
+"   Show msg when any other cscope db added
     set cscopeverbose  
 
-    """"""""""""" My cscope/vim key mappings
-    "
-    " The following maps all invoke one of the following cscope search types:
-    "
-    "   's'   symbol: find all references to the token under cursor
-    "   'g'   global: find global definition(s) of the token under cursor
-    "   'c'   calls:  find all calls to the function name under cursor
-    "   't'   text:   find all instances of the text under cursor
-    "   'e'   egrep:  egrep search for the word under cursor
-    "   'f'   file:   open the filename under cursor
-    "   'i'   includes: find files that include the filename under cursor
-    "   'd'   called: find functions that function under cursor calls
-    "
-    " Below are three sets of the maps: one set that just jumps to your
-    " search result, one that splits the existing vim window horizontally and
-    " diplays your search result in the new window, and one that does the same
-    " thing, but does a vertical split instead (vim 6 only).
-    "
-    " I've used CTRL-\ and CTRL-@ as the starting keys for these maps, as it's
-    " unlikely that you need their default mappings (CTRL-\'s default use is
-    " as part of CTRL-\ CTRL-N typemap, which basically just does the same
-    " thing as hitting 'escape': CTRL-@ doesn't seem to have any default use).
-    " If you don't like using 'CTRL-@' or CTRL-\, , you can change some or all
-    " of these maps to use other keys.  One likely candidate is 'CTRL-_'
-    " (which also maps to CTRL-/, which is easier to type).  By default it is
-    " used to switch between Hebrew and English keyboard mode.
-    "
-    " All of the maps involving the <cfile> macro use '^<cfile>$': this is so
-    " that searches over '#include <time.h>" return only references to
-    " 'time.h', and not 'sys/time.h', etc. (by default cscope will return all
-    " files that contain 'time.h' as part of their name).
+""""""""""""" My cscope/vim key mappings
+"   The following maps all invoke one of the following cscope search types:
+"   's'   symbol: find all references to the token under cursor
+"   'g'   global: find global definition(s) of the token under cursor
+"   'c'   calls:  find all calls to the function name under cursor
+"   't'   text:   find all instances of the text under cursor
+"   'e'   egrep:  egrep search for the word under cursor
+"   'f'   file:   open the filename under cursor
+"   'i'   includes: find files that include the filename under cursor
+"   'd'   called: find functions that function under cursor calls
 
-    " To do the first type of search, hit 'CTRL-\', followed by one of the
-    " cscope search types above (s,g,c,t,e,f,i,d).  The result of your cscope
-    " search will be displayed in the current window.  You can use CTRL-T to
-    " go back to where you were before the search.  
+" Below are three sets of the maps: one set that just jumps to your
+" search result, one that splits the existing vim window horizontally and
+" diplays your search result in the new window, and one that does the same
+" thing, but does a vertical split instead (vim 6 only).
+
+" I've used CTRL-\ and CTRL-@ as the starting keys for these maps, as it's
+" unlikely that you need their default mappings (CTRL-\'s default use is
+" as part of CTRL-\ CTRL-N typemap, which basically just does the same
+" thing as hitting 'escape': CTRL-@ doesn't seem to have any default use).
+" If you don't like using 'CTRL-@' or CTRL-\, , you can change some or all
+" of these maps to use other keys.  One likely candidate is 'CTRL-_'
+" (which also maps to CTRL-/, which is easier to type).  By default it is
+" used to switch between Hebrew and English keyboard mode.
+
+" All of the maps involving the <cfile> macro use '^<cfile>$': this is so
+" that searches over '#include <time.h>" return only references to
+" 'time.h', and not 'sys/time.h', etc. (by default cscope will return all
+" files that contain 'time.h' as part of their name).
+
+" To do the first type of search, hit 'CTRL-\', followed by one of the
+" cscope search types above (s,g,c,t,e,f,i,d).  The result of your cscope
+" search will be displayed in the current window.  You can use CTRL-T to
+" go back to where you were before the search.  
 
     nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>	
     nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>	
@@ -522,13 +554,13 @@ if has("cscope")
     nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
     nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>	
 
-    " Using 'CTRL-spacebar' (intepreted as CTRL-@ by vim) then a search type
-    " makes the vim window split horizontally, with search result displayed in
-    " the new window.
-    "
-    " (Note: earlier versions of vim may not have the :scs command, but it
-    " can be simulated roughly via:
-    "    nmap <C-@>s <C-W><C-S> :cs find s <C-R>=expand("<cword>")<CR><CR>	
+" Using 'CTRL-spacebar' (intepreted as CTRL-@ by vim) then a search type
+" makes the vim window split horizontally, with search result displayed in
+" the new window.
+
+" (Note: earlier versions of vim may not have the :scs command, but it
+" can be simulated roughly via:
+"    nmap <C-@>s <C-W><C-S> :cs find s <C-R>=expand("<cword>")<CR><CR>	
 
 "    nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR><CR>	
 "    nmap <C-@>g :scs find g <C-R>=expand("<cword>")<CR><CR>	
@@ -539,11 +571,11 @@ if has("cscope")
 "    nmap <C-@>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>	
 "    nmap <C-@>d :scs find d <C-R>=expand("<cword>")<CR><CR>	
 
-    " Hitting CTRL-space *twice* before the search type does a vertical 
-    " split instead of a horizontal one (vim 6 and up only)
-    "
-    " (Note: you may wish to put a 'set splitright' in your .vimrc
-    " if you prefer the new window on the right instead of the left
+" Hitting CTRL-space *twice* before the search type does a vertical 
+" split instead of a horizontal one (vim 6 and up only)
+
+" (Note: you may wish to put a 'set splitright' in your .vimrc
+" if you prefer the new window on the right instead of the left
 
     nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR><CR>
     nmap <C-@><C-@>g :vert scs find g <C-R>=expand("<cword>")<CR><CR>
@@ -554,38 +586,30 @@ if has("cscope")
     nmap <C-@><C-@>i :vert scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>	
     nmap <C-@><C-@>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>
 
-    """"""""""""" key map timeouts
-    "
-    " By default Vim will only wait 1 second for each keystroke in a mapping.
-    " You may find that too short with the above typemaps.  If so, you should
-    " either turn off mapping timeouts via 'notimeout'.
-    "
-    "set notimeout 
-    "
-    " Or, you can keep timeouts, by uncommenting the timeoutlen line below,
-    " with your own personal favorite value (in milliseconds):
-    "
-    "set timeoutlen=4000
-    "
-    " Either way, since mapping timeout settings by default also set the
-    " timeouts for multicharacter 'keys codes' (like <F1>), you should also
-    " set ttimeout and ttimeoutlen: otherwise, you will experience strange
-    " delays as vim waits for a keystroke after you hit ESC (it will be
-    " waiting to see if the ESC is actually part of a key code like <F1>).
-    "
-    "set ttimeout 
-    "
-    " personally, I find a tenth of a second to work well for key code
-    " timeouts. If you experience problems and have a slow terminal or network
-    " connection, set it higher.  If you don't set ttimeoutlen, the value for
-    " timeoutlent (default: 1000 = 1 second, which is sluggish) is used.
-    "
-    "set ttimeoutlen=100
+""""""""""""" key map timeouts
+" By default Vim will only wait 1 second for each keystroke in a mapping.
+" You may find that too short with the above typemaps.  If so, you should
+" either turn off mapping timeouts via 'notimeout'.
+"   set notimeout 
+" Or, you can keep timeouts, by uncommenting the timeoutlen line below,
+" with your own personal favorite value (in milliseconds):
 
-    "
-    " Reload cscope DB or create new one
-    "
-    "
+"   set timeoutlen=4000
+" Either way, since mapping timeout settings by default also set the
+" timeouts for multicharacter 'keys codes' (like <F1>), you should also
+" set ttimeout and ttimeoutlen: otherwise, you will experience strange
+" delays as vim waits for a keystroke after you hit ESC (it will be
+" waiting to see if the ESC is actually part of a key code like <F1>).
+
+"   set ttimeout 
+" personally, I find a tenth of a second to work well for key code
+" timeouts. If you experience problems and have a slow terminal or network
+" connection, set it higher.  If you don't set ttimeoutlen, the value for
+" timeoutlent (default: 1000 = 1 second, which is sluggish) is used.
+
+"   set ttimeoutlen=100
+
+" Reload cscope DB or create new one
     :command -nargs=0 CSBuild :call CSBuild()
 "    nmap <leader>rb :call CSBuild()<CR>
 endif
@@ -603,16 +627,16 @@ let g:SrcExpl_winHeight=8 		" set the height of Source Explorer window
 let g:SrcExpl_refreshTime=100  	        " set 100 ms for refreshing the Source Explorer
 let g:SrcExpl_jumpKey="<ENTER>" 	" set <Enter> key to jump into the exact definition context
 let g:SrcExpl_gobackKey="<SPACE>"	" set <Space> key for back from the definition context 
-         
+    
 " In order to avoid conflicts, the Source Explorer should know what plugins 
 " except itself are using buffers. And you need add their buffer names into 
 " below listaccording to the command ":buffers!"                            
 let g:SrcExpl_pluginList = [ 
-		\ "__Tag_List__", 
-        	\ "_NERD_tree_", 
-		\ "Source_Explorer"
-     	        \ ] 
-                                                                             
+    \ "__Tag_List__", 
+    \ "_NERD_tree_", 
+    \ "Source_Explorer"
+    \ ] 
+
 " Enable/Disable the local definition searching, and note that this is not  
 " guaranteed to work, the Source Explorer doesn't check the syntax for now. 
 " It only searches for a match with the keyword according to command 'gd'   
@@ -620,10 +644,10 @@ let g:SrcExpl_searchLocalDef=1
 
 " Do not let the Source Explorer update the tags file when opening           
 let g:SrcExpl_isUpdateTags=0 
-                                                                               
+    
 " Use 'Exuberant Ctags' with '--sort=foldcase -R .' or '-L cscope.files' to 
 " create/update a tags file                                                
-let g:SrcExpl_updateTagsCmd="ctags --sort=foldcase -R ." 
+""let g:SrcExpl_updateTagsCmd="ctags --sort=foldcase -R ." 
 
 " ================================ c.vim (C/C++ IDE) ======================================= 
 " To enable the tools for cmake or doxygen
@@ -632,6 +656,11 @@ let g:C_UseTool_doxygen='yes'
 
 " ======================================== Tagbar ========================================== 
 nmap <silent> <F4> :TagbarToggle<CR>
+let g:tagbar_left=1
+let g:tagbar_singleclick=1
+let g:tagbar_autoshowtag=1 
+let g:tagbar_show_visibility=1
+let g:tagbar_ctags_bin="/usr/local/bin/ctags"
 
 " ======================================== Mark ============================================ 
 let g:mwDefaultHighlightingPalette = 'extended' " switch to a richer palette of up to 18 colors
@@ -695,29 +724,29 @@ function! NTFinderP()
 endfunction
 
 " =======[M@/G]============================== TabBar ==============================================
-let g:Tb_MaxSize=4                  " TabBar window display size
+let g:Tb_MaxSize=3                  " TabBar window display size
 let g:Tb_TabWra=1                   " let tab dispaly context can change Line
 
 " ================================== FuzzyFinder ============================================
-map <leader>F :FufFile<CR>  
-map <leader>f :FufTaggedFile<CR>     
-map <leader>g :FufTag<CR>       
-map <leader>b :FufBuffer<CR>
+" map <leader>F :FufFile<CR>  
+" map <leader>f :FufTaggedFile<CR>     
+" map <leader>g :FufTag<CR>       
+" map <leader>b :FufBuffer<CR>
 
 " ===================================== CtrlP ===============================================
 let g:ctrlp_clear_cache_on_exit=0               " not to clean up cache after vim
 let g:ctrlp_mruf_max=500                        " set the number of recently opend files 
-let g:ctrlp_max_files=0                         " enlarge cache index file numbers to prevent
-                                                " lost file when in the process of search; 
-                                                " 0 is not to restrict file numbers
+" Enlarge cache index file numbers to prevent lost file when in the process of search; 0 is
+" not to restrict file numbers:
+let g:ctrlp_max_files=0         
 let g:ctrlp_working_path_mode='rw'
-" speed up index file search
+" Speed up index file search
 let g:ctrlp_user_command={
     \ 'types': {
         \ 1: ['.git', 'cd %s && git ls-files -c -o --exclude-standard'],
         \ 2: ['.hg', 'hg --cwd %s locate -I .'],
         \ },
-        \ 'fallback': 'find %s -type f'
+    \ 'fallback': 'find %s -type f'
     \ }
 " Ingore not useful files when in search files
 let g:ctrlp_custom_ignore={                   
@@ -727,8 +756,220 @@ let g:ctrlp_custom_ignore={
     \ }
 
 " ==================================== Ctags ===============================================
-set tags=tags   " set tags file existed diectory path (tags' current directory path)
-set autochdir   " set working dircetory of curren file be edited is the current working dircetory in Vim
+""set tags=tags   " set tags file existed diectory path (tags' current directory path)
+""set autochdir   " set working dircetory of curren file be edited is the current working dircetory in Vim
+
+" ==================================== Gtags ===============================================
+" This plugin installed without using vundle, adn I put gtags.vim and gtags-cscope.cim to 
+" ~/.vim/bundle/gtags/plugin from /usr/local/share/gtags. 
+function! s:GtagsCscope_GtagsRoot()
+    let s:global_command = "global"
+    let cmd = s:global_command . " -pq"
+    let cmd_output = system(cmd)
+    return strpart(cmd_output, 0, strlen(cmd_output) - 1)
+endfunction
+
+function! s:GtagsCscope()
+    " Get gtagsroot directory.
+    let gtagsroot = s:GtagsCscope_GtagsRoot()
+    if (!empty(gtagsroot))"
+        " Load gtags-cscope.
+        set csprg=gtags-cscope
+"       let s:command = "cs add " . gtagsroot . "/GTAGS"
+        let s:option = ''
+"       if g:GtagsCscope_Ignore_Case == 1
+        let s:option = s:option . 'C'
+"       endif
+"       if g:GtagsCscope_Absolute_Path == 1
+        let s:option = s:option . 'a'
+"       endif
+"       if g:GtagsCscope_Keep_Alive == 1
+        let s:option = s:option . 'i'
+"       endif
+        if s:option != ''
+"       let s:command = s:command . ' . -' . s:option
+        endif
+
+        set nocscopeverbose
+"       let s:command = "cs add " . gtagsroot . "/GTAGS" . ' . -' . 'i' . 'a' . 'C'
+        let s:command = "cs add " . gtagsroot . "/GTAGS" . ' . -' . 'i' . 'a'
+        exe s:command
+        set cscopeverbose
+
+"       Key mapping
+"       if g:GtagsCscope_Auto_Map == 1
+"       The following key mappings are derived from 'cscope_maps.vim'.
+"       (The 'd' command is not implemented in gtags-cscope.)
+"       Normal command
+        nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+        nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+        nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+        nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+        nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+        nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+        nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+        nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+"       Using 'CTRL-spacebar', the result is displayed in new horizontal window.
+    endif
+endfunction
+
+function! UpdateGtags(f)
+    let dir = fnamemodify(a:f, ':p:h')
+    exe 'silent !cd ' . dir . ' && global -u &> /dev/null &'
+endfunction
+
+" windowdir
+" Gets the directory for the file in the current window
+" Or the current working dir if there isn't one for the window.
+" Use tr to allow that other OS paths, too
+function! s:windowdir()
+    if winbufnr(0) == -1
+        let unislash = getcwd()
+    else
+        let unislash = fnamemodify(bufname(winbufnr(0)), ':p:h')
+    endif
+    return tr(unislash, '\', '/')
+endfunction
+
+" Find_in_parent
+" find the file argument and returns the path to it.
+" Starting with the current working dir, it walks up the parent folders
+" until it finds the file, or it hits the stop dir.
+" If it doesn't find it, it returns "Nothing"
+function! s:Find_in_parent(fln,flsrt,flstp)
+    let here = a:flsrt
+    while ( strlen( here) > 0 )
+        if filereadable( here . "/" . a:fln )
+            return here
+        endif
+        let fr = match(here, "/[^/]*$")  
+        if fr == -1
+            break
+        endif
+        let here = strpart(here, 0, fr)
+        if here == a:flstp
+            break
+        endif
+    endwhile
+    return "Nothing"
+endfunction
+
+" In the following function is to replace autoload_cscope.vim
+" Unload_csdb
+" drop cscope connections.
+function! s:Unload_csdb()
+    if exists("b:csdbpath")
+        if cscope_connection(3, "out", b:csdbpath)
+            let save_csvb = &csverb
+            set nocsverb
+            exe "cs kill " . b:csdbpath
+            set csverb
+            let &csverb = save_csvb
+        endif
+    endif
+endfunction
+
+" Cycle_csdb
+" cycle the loaded cscope db.
+function! s:Cycle_csdb()
+    if exists("b:csdbpath")
+        if cscope_connection(3, "out", b:csdbpath)
+            return
+"           it is already loaded. don't try to reload it.
+        endif
+    endif
+    let newcsdbpath = s:Find_in_parent("cscope.out",s:windowdir(),$HOME)
+"   echo "Found cscope.out at: " . newcsdbpath
+"   echo "Windowdir: " . s:windowdir()
+    if newcsdbpath != "Nothing"
+        let b:csdbpath = newcsdbpath
+        if !cscope_connection(3, "out", b:csdbpath)
+            let save_csvb = &csverb
+"           set nocsverb
+            set csverb
+            exe "cs add " . b:csdbpath . "/cscope.out " . b:csdbpath
+            let &csverb = save_csvb
+        endif
+    else 
+"       No cscope database, undo things. (someone rm-ed it or somesuch)
+        call s:Unload_csdb()
+    endif
+endfunction
+
+" If GTAGS is existed, then use gtags-cscope
+" If GTAGS is not existed, then use cscope
+function! SelectCscopeDb()
+    set nocscopeverbose				"suppress 'duplicate connection' error
+    let gtagsroot = s:GtagsCscope_GtagsRoot()
+    if (!empty(gtagsroot))
+        set cscopeprg=gtags-cscope
+        let s:command = "cs add " . gtagsroot . "/GTAGS" . ' . -' . 'i' . 'a'
+        exe s:command
+"       When save file and then update automatically gtags
+"       au BufWritePost *.[ch] call UpdateGtags(expand('<afile>'))
+"       au BufWritePost *.[ch]pp call UpdateGtags(expand('<afile>'))
+"       au BufWritePost *.[ch]xx call UpdateGtags(expand('<afile>'))
+"       au BufWritePost *.java call UpdateGtags(expand('<afile>'))
+"       au BufWritePost *.cc call UpdateGtags(expand('<afile>'))
+    else
+        set csprg=/usr/bin/cscope
+"       Use both cscope and ctag
+        set cscopetag
+"       Use cscope for definition search first
+        set cscopetagorder=0
+        let g:autocscope_menus=0
+        set cscopetagorder=0
+"       Auto toggle the menu
+        augroup autoload_cscope
+        au!
+        au BufEnter *.[chly]  call <SID>Cycle_csdb()
+        au BufEnter *.cc      call <SID>Cycle_csdb()
+        au BufEnter *.cpp     call <SID>Cycle_csdb()
+        au BufEnter *.java    call <SID>Cycle_csdb()
+        au BufUnload *.[chly] call <SID>Unload_csdb()
+        au BufUnload *.cc     call <SID>Unload_csdb()
+        au BufUnload *.cpp     call <SID>Unload_csdb()
+        au BufUnload *.java    call <SID>Unload_csdb()
+        augroup END
+        nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+    endif
+"   set cscopequickfix=c-,d-,e-,f-,g0,i-,s-,t-
+"   Resolve both cscope and tag when they co-existed, 
+"   lead to <C-]> key map sometimes can not normanal operation 
+"   that the bug exist
+    nmap <C-]> :tj <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+    set cscopeverbose
+endfunc
+
+autocmd FileType c,cpp,java,python call SelectCscopeDb()
+command! -nargs=0 GtagsCscope call s:GtagsCscope()
+
+" ============================== EasyGrep ==================================================
+let g:EasyGrepCommand=0          " use vimgrep:0, grepprg:1
+let g:EasyGrepRecursive=1        " recursive searching
+let g:EasyGrepIgnoreCase=1       " specifies the case sensitivity of searches, note that 
+                                 " this can be further overrided for vimgrep searches with \c and \C.
+" Specifies a list of file patterns that will be excluded from the search
+let g:EasyGrepFilesToExclude="Python, PHP, *.bak, *cscope.*, *.a, *.o, *.bak"
+let g:EasyGrepMode=0             " EasyGrepMode and default=0. Specifies the mode in which to start;
+" 0- All files; 1- Open Buffers; 2- Track the current extension; 3- Use custom, on demand set of extensions
+
+
+
+
+
+
+" ==========================================================================================
+
+
+
 
 
 

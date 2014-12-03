@@ -10,6 +10,7 @@
 " Sections:										   "
 "    -> INSTALL VUNDLE AUTOMATICALLY							   "
 "    -> GENERAL SETTINGS								   "
+"       - Session Management                                                               "
 "	- VIM User Interface                                                               "
 "	- Ignore Files When Completion                                                     "
 "	- TAB Settings									   "
@@ -26,6 +27,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 
+
 " ==========================================================================================
 " ========================= INSTALL VUNDLE AUTOMATICALLY ===================================
 " ==========================================================================================
@@ -38,6 +40,7 @@ if !filereadable(vundle_readme)
     silent !git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
     let iCanHazVundle=0
 endif
+
 
 
 " ==========================================================================================
@@ -68,7 +71,10 @@ set hidden              " when switch buffer not to warn except exist Vim
 set updatetime=500      " update after 500ms later
 autocmd! bufwritepost .vimrc source ~/.vimrc	" auto reload vimrc when editing it
 
-" =========================== Ignore Files When Completion==================================
+" ================================ Session Management =====================================
+set sessionoptions=blank,buffers,curdir,folds,tabpages,winsize   " session options types
+
+" =========================== Ignore Files When Completion =================================
 " Enable enhanced command line completion.
 set wildmenu wildmode=list:full
 
@@ -137,6 +143,7 @@ endfunction
 
 " ============================= C/C++ Specific Settings ====================================
 autocmd FileType c,cpp,cc  set cindent comments=sr:/*,mb:*,el:*/,:// cino=>s,e0,n0,f0,{0,}0,^-1s,:0,=s,g0,h1s,p2,t0,+2,(2,)20,*30	
+
 
 
 " ==========================================================================================
@@ -241,7 +248,7 @@ inoremap <C-u>4 <esc>yypVr-A
 noremap  <C-u>5 yypVr^
 inoremap <C-u>5 <esc>yypVr^A
 
-" =============================== Other Useful Shortcuts ===================================
+" ================================= Global Replace Mode  ===================================
 " Tip #382: Search for <cword> and replace with input() in all open buffers 
 fun! Replace() 
     let s:word = input("Replace " . expand('<cword>') . " with:") 
@@ -249,6 +256,7 @@ fun! Replace()
     :unlet! s:word 
 endfun 
 
+" ================================= Session Management =====================================
 " Restore cursor to file position in previous editing session
 " Return to last edit position when opening files 
 autocmd  BufReadPost * 
@@ -256,9 +264,10 @@ autocmd  BufReadPost *
     \ exe("norm '\"") |
     \ else | exe "norm $" |
     \ endif | endif
-	
+
 " Remember info about open buffers on close		
-set viminfo='10,\"100,:20,%,n~/.viminfo
+set viminfo='10,\"500,:20,%,n~/.viminfo
+
 
 
 " ==========================================================================================
@@ -304,6 +313,7 @@ autocmd BufNewFile,BufRead *.scss             set ft=scss.css
 autocmd BufNewFile,BufRead *.sass             set ft=sass.css
 
 
+
 " ==========================================================================================
 " =============================== ENCODING SETTINGS ========================================
 " ==========================================================================================
@@ -329,6 +339,7 @@ fun! Big5()
     set encoding=big5
     set fileencoding=big5
 endfun
+
 
 
 " ==========================================================================================
@@ -368,13 +379,14 @@ Plugin 'bling/vim-airline'          " Lean & mean status/tabline for vim that's 
 Plugin 'tpope/vim-fugitive'         " display git branch (airline git other plugin)
 Plugin 'a.vim'	                    " alternate files quickly (.c --> .h etc)
 Plugin 'EasyGrep'	            " fast and easy find and replace across multiple files
+Plugin 'sessionman.vim'	            " Vim session manager
 
 " Syntaxi
 Plugin 'c.vim'                      " C/C++ IDE. Write and run programs. Insert statements, idioms, comments etc.
 
 " Color Scheme
-Plugin 'wombat256.vim'	        " wombat for 256 color xterms
-Plugin 'Solarized'              " Beautiful dual light/dark, selective contrast, GUI/256/16 colorscheme
+Plugin 'wombat256.vim'	            " wombat for 256 color xterms
+Plugin 'Solarized'                  " Beautiful dual light/dark, selective contrast, GUI/256/16 colorscheme
 
 " Not Use Plgin (Maybe other similar plugin seems to be more useful)
 " Plugin 'FuzzyFinder'                " buffer/file/command/tag/etc explorer with fuzzy matching
@@ -409,6 +421,7 @@ filetype plugin indent on    " required
 "  :PluginInstall
 "  :qall
 " endif
+
 
 
 " ==========================================================================================
@@ -634,7 +647,9 @@ let g:SrcExpl_gobackKey="<SPACE>"	" set <Space> key for back from the definition
 let g:SrcExpl_pluginList = [ 
     \ "__Tag_List__", 
     \ "_NERD_tree_", 
-    \ "Source_Explorer"
+    \ "Source_Explorer",
+    \ "-TabBar-",
+    \ "ControlP" 
     \ ] 
 
 " Enable/Disable the local definition searching, and note that this is not  
@@ -734,6 +749,8 @@ let g:Tb_TabWra=1                   " let tab dispaly context can change Line
 " map <leader>b :FufBuffer<CR>
 
 " ===================================== CtrlP ===============================================
+let g:ctrlp_map='<c-p>'                         " default CtrlP mapping key <c-p>
+let g:ctrlp_open_multiple_files='v'             " can open multiple files with <c-z> and <c-o>
 let g:ctrlp_clear_cache_on_exit=0               " not to clean up cache after vim
 let g:ctrlp_mruf_max=500                        " set the number of recently opend files 
 " Enlarge cache index file numbers to prevent lost file when in the process of search; 0 is
@@ -956,17 +973,54 @@ let g:EasyGrepCommand=0          " use vimgrep:0, grepprg:1
 let g:EasyGrepRecursive=1        " recursive searching
 let g:EasyGrepIgnoreCase=1       " specifies the case sensitivity of searches, note that 
                                  " this can be further overrided for vimgrep searches with \c and \C.
-" Specifies a list of file patterns that will be excluded from the search
+"bfgorst Specifies a list of file patterns that will be excluded from the search
 let g:EasyGrepFilesToExclude="Python, PHP, *.bak, *cscope.*, *.a, *.o, *.bak"
 let g:EasyGrepMode=0             " EasyGrepMode and default=0. Specifies the mode in which to start;
 " 0- All files; 1- Open Buffers; 2- Track the current extension; 3- Use custom, on demand set of extensions
 
-
-
+" ========================== Session Manager ===============================================
+" SessionList :lists all saved sessions
+nmap <leader>sl :SessionList<CR>
+" SessionSaveAs :takes a session name as an optional argument, it asks for a session name
+nmap <leader>ss :SessionSaveAs<CR>
+" SessionClose :wipes out all buffers, kills cscope and clears variables with session name
+nmap <leader>sc :SessionClose<CR>   
+" Let Sessionman can load last location situation when existing file Because vimrc is loaded before plugins, 
+" adding SessionOpenLast to vimrc will not work. To solve this, create an auto-command:
+autocmd VimEnter * SessionOpenLast
 
 
 
 " ==========================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

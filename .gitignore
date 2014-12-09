@@ -6,3 +6,4 @@ bundle/*
 .cscope.*
 tags
 sessions
+workbench.xmi

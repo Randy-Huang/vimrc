@@ -8,7 +8,6 @@
 " Licence____:                                                                             "
 "                                                                                          "
 " Sections:										   "
-"    -> INSTALL VUNDLE AUTOMATICALLY							   "
 "    -> GENERAL SETTINGS								   "
 "       - Session Management                                                               "
 "	- VIM User Interface                                                               "
@@ -25,23 +24,6 @@
 "    -> PLUGINS SETTINGS SECTION							   "
 "                                                                                          "
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
-
-" ==========================================================================================
-" ========================= INSTALL VUNDLE AUTOMATICALLY ===================================
-" ==========================================================================================
-let iCanHazVundle=1
-let vundle_readme=expand('~/.vim/bundle/Vundle.vim/README.md')
-if !filereadable(vundle_readme)
-    echo "Installing Vundle.."
-    echo ""
-    silent !mkdir -p ~/.vim/bundle
-    silent !git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
-    let iCanHazVundle=0
-endif
-
-
 
 " ==========================================================================================
 " ================================= GENERAL SETTINGS =======================================
@@ -200,6 +182,10 @@ nmap <unique> <leader>j <C-W><BAR>
 set wmw=0                     	" set the min width of a window to 0 so we can maximize others 
 set wmh=0                     	" set the min height of a window to 0 so we can maximize others
 
+" ================================ Buffer Shortcuts ========================================
+nnoremap [b :bp<CR>
+nnoremap ]b :bn<CR>
+
 " ================================= TAB Shortcuts ==========================================
 " move around tabs. conflict with the original screen top/bottom
 " comment them out if you want the original H/L
@@ -267,6 +253,13 @@ autocmd  BufReadPost *
 
 " Remember info about open buffers on close		
 set viminfo='10,\"500,:20,%,n~/.viminfo
+
+" ================================= Cancel Mapping Key =====================================
+" Cancel arrow key in normanal mode
+noremap <Up> <NOP>
+noremap <Down> <NOP>
+noremap <Left> <NOP>
+noremap <Right> <NOP>
 
 
 
@@ -348,10 +341,23 @@ endfun
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
+" Automatically setting up Vundle
+let iCanHazVundle=1
+set shellxquote=""
+let vundle_readme=expand('~/.vim/bundle/vundle/README.md')
+if !filereadable(vundle_readme)
+    echo "Installing Vundle..."
+    echo ""
+    silent !mkdir -p ~/.vim/bundle
+    silent !git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+    let iCanHazVundle=0
+endif
+
+" Set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/vundle
 call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
+
+" Alternatively, pass a path where Vundle should install plugins
 " call vundle#begin('~/some/path/here')
 
 " =============================== Plugin Management ========================================
@@ -359,20 +365,17 @@ call vundle#begin()
 Plugin 'gmarik/vundle'              " let Vundle manage Vundle, required
 Plugin 'L9'                         " vim-script library
 Plugin 'AutoClose'                  " insert matching bracket, paren, brace or quote
-Plugin 'AutoComplPop'               " automatically opens popup menu for completions
 Plugin 'taglist.vim'                " source code browser (supports C/C++, java, perl, python, etc)
 Plugin 'The-NERD-tree'              " a tree explorer plugin for navigating the filesystem
 Plugin 'SrcExpl'                    " a source code explorer
 Plugin 'fakeclip'                   " pseudo clipboard register for non-GUI version of Vim
-Plugin 'neocomplcache'              " ultimate auto completion system for Vim
-Plugin 'cscope.vim'                 " create cscope database and connect to existing proper database automatically.
+Plugin 'cscope.vim'                 " create cscope database and connect to existing proper database automatically
 Plugin 'Trinity'                    " build the trinity of srcexpl, taglist, NERD_tree, conflict with Winmanager
 Plugin 'Tagbar'                     " display tags of the current file ordered by scope
-Plugin 'TabBar'                     " plugin to add tab bar (derived from miniBufExplorer)
+Plugin 'humiaozuzu/TabBar'          " plugin to add tab bar (derived from miniBufExplorer)
 Plugin 'EasyMotion'                 " Vim motions on speed
 Plugin 'Tabular'                    " Vim script for text filtering and alignment
 Plugin 'jreybert/vim-mark'          " highlight several words in different colors simultaneously
-Plugin 'lookupfile'	            " Lookup files using Vim7 ins-completion
 Plugin 'genutils'                   " General utility functions
 Plugin 'ctrlp.vim'	            " Fuzzy file, buffer, MRU, and tag finder with regexp support.
 Plugin 'bling/vim-airline'          " Lean & mean status/tabline for vim that's light as air
@@ -380,20 +383,23 @@ Plugin 'tpope/vim-fugitive'         " display git branch (airline git other plug
 Plugin 'a.vim'	                    " alternate files quickly (.c --> .h etc)
 Plugin 'EasyGrep'	            " fast and easy find and replace across multiple files
 Plugin 'sessionman.vim'	            " Vim session manager
+Plugin 'Shougo/unite.vim'           " search and display information from files, buffers, recently used files or registers
+Plugin 'Valloric/YouCompleteMe'	    " a code-completion engine for Vim
+Plugin 'scrooloose/syntastic'       " automatic syntax checking
 
 " Syntaxi
 Plugin 'c.vim'                      " C/C++ IDE. Write and run programs. Insert statements, idioms, comments etc.
 
 " Color Scheme
 Plugin 'wombat256.vim'	            " wombat for 256 color xterms
-Plugin 'Solarized'                  " Beautiful dual light/dark, selective contrast, GUI/256/16 colorscheme
-
-" Not Use Plgin (Maybe other similar plugin seems to be more useful)
-" Plugin 'FuzzyFinder'                " buffer/file/command/tag/etc explorer with fuzzy matching
-" Plugin 'The-NERD-tree'              " a tree explorer plugin for navigating the filesystem
-" Plugin 'Lokaltog/vim-powerline'     " allow you to create better-looking, more functional vim statuslines
-" Plugin 'fholgado/minibufexpl.vim'   " elegant buffer explorer - takes very little screen space
+Plugin 'Solarized'                  " beautiful dual light/dark, selective contrast, GUI/256/16 colorscheme
 " ============================= End Plugin Management ======================================
+" Install plugins in the first time
+if iCanHazVundle==0
+    echo "Installing Plugins, please ignore key map error messages"
+    echo ""
+    :PluginInstall
+endif
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -629,13 +635,13 @@ endif
 
 " ================================ Triniry Plugin ==========================================
 " Triniry + Source Explorer + TagList + NERD Tree
-nmap <F5>  :TrinityToggleAll<CR>		" open all the three plugins on the same time
-nmap <F6>  :TrinityToggleSourceExplorer<CR>	" open the srcexpl.vim separately
-nmap <F7>  :TrinityToggleTagList<CR>		" open the taglist.vim separately
-nmap <F8>  :TrinityToggleNERDTree<CR>		" open the NERD_tree.vim separately
+nmap <F5>  :TrinityToggleAll<CR>
+nmap <F6>  :TrinityToggleSourceExplorer<CR>
+nmap <F7>  :TrinityToggleTagList<CR>
+nmap <F8>  :TrinityToggleNERDTree<CR>
 
 " ============================= Source Explorer Plugin ===================================== 
-nmap <F6> :SrcExplToggle<CR> 		" the switch of the Source Explorer                                   
+nmap <F6> :SrcExplToggle<CR> 		" the switch of the Source Explorer
 let g:SrcExpl_winHeight=8 		" set the height of Source Explorer window 
 let g:SrcExpl_refreshTime=100  	        " set 100 ms for refreshing the Source Explorer
 let g:SrcExpl_jumpKey="<ENTER>" 	" set <Enter> key to jump into the exact definition context
@@ -649,7 +655,11 @@ let g:SrcExpl_pluginList = [
     \ "_NERD_tree_", 
     \ "Source_Explorer",
     \ "-TabBar-",
-    \ "ControlP" 
+    \ "ControlP",
+    \ "[Quickfix List]",
+    \ "[unite]*",
+    \ "__SessionList__",
+    \ "-T*","_*","[*"
     \ ] 
 
 " Enable/Disable the local definition searching, and note that this is not  
@@ -678,19 +688,14 @@ let g:tagbar_show_visibility=1
 let g:tagbar_ctags_bin="/usr/local/bin/ctags"
 
 " ======================================== Mark ============================================ 
-let g:mwDefaultHighlightingPalette = 'extended' " switch to a richer palette of up to 18 colors
-let g:mwDefaultHighlightingNum = 9              " Additional colors up to 9
+let g:mwDefaultHighlightingPalette='extended' " switch to a richer palette of up to 18 colors
+let g:mwDefaultHighlightingNum=9              " Additional colors up to 9
 nmap <silent> <unique> <leader>hh <Plug>MarkSet
 vmap <silent> <unique> <leader>hh <Plug>MarkSet
 nmap <silent> <unique> <leader>hc <Plug>MarkClear
 vmap <silent> <unique> <leader>hc <Plug>MarkClear
 nmap <silent> <unique> <leader>hr <Plug>MarkRegex
 vmap <silent> <unique> <leader>hr <Plug>MarkRegex 
-
-" ================================== Powerline (vim) ========================================
-" let g:Powerline_symbols='fancy'                 " enable fancy symbol in powerline
-" let g:Powerline_colorscheme='solarized256'      " set powerline colorscheme
-" set fillchars+=stl:\ ,stlnc:\                   " disable statusline fillchars
 
 " ====================================== Airline ============================================
 let g:airline_powerline_fonts=1                   " enable powerline fonts
@@ -699,8 +704,6 @@ let g:airline#extensions#tabline#left_sep=''      " separator symbol used in cur
 let g:airline#extensions#tabline#left_alt_sep='|' " separator symbol used in not active buffer for tabline
 let g:airline#extensions#tabline#buffer_nr_show=1 " display buffer number in tabilne
 let g:airline_theme='dark'                        " airline color theme
-nnoremap [b :bp<CR>
-nnoremap ]b :bn<CR>
 
 " ================================== The NERD_tree ==========================================
 nmap <silent> <F8> :NERDTreeToggle<CR>
@@ -738,15 +741,9 @@ function! NTFinderP()
     endif
 endfunction
 
-" =======[M@/G]============================== TabBar ==============================================
+" ===================================== TabBar ==============================================
 let g:Tb_MaxSize=3                  " TabBar window display size
 let g:Tb_TabWra=1                   " let tab dispaly context can change Line
-
-" ================================== FuzzyFinder ============================================
-" map <leader>F :FufFile<CR>  
-" map <leader>f :FufTaggedFile<CR>     
-" map <leader>g :FufTag<CR>       
-" map <leader>b :FufBuffer<CR>
 
 " ===================================== CtrlP ===============================================
 let g:ctrlp_map='<c-p>'                         " default CtrlP mapping key <c-p>
@@ -989,45 +986,56 @@ nmap <leader>sc :SessionClose<CR>
 " adding SessionOpenLast to vimrc will not work. To solve this, create an auto-command:
 autocmd VimEnter * SessionOpenLast
 
+" ================================= Unite ==================================================
+nnoremap <unique><leader>ub :Unite buffer<cr>
+nnoremap <unique><leader>fr :Unite file_rec<cr>
+nnoremap <unique><leader>uf :<C-u>Unite file<CR>
+nnoremap <unique><leader>ur :<C-u>Unite -start-insert file_rec/async:!<CR>
+nnoremap <unique><leader>um :<C-u>Unite mapping<CR>
+
+
+
+let g:unite_update_time=240              " updating the candidate list as the filter text (Msec)
+let g:unite_enable_split_vertically=0    " if this variable is 1, unite window is split vertically
+let g:unite_source_file_rec_max_depth=10 " the max depth of project folder
+let g:unite_source_history_yank_enable=1 " if defined and not 0, unite enables
+
+" ============================== YouCompleteMe =============================================
+" YCM searches for a '.ycm_extra_conf.py' file for compilation flags
+let g:ycm_global_ycm_extra_conf='/home/randy-huang/.vim/vimrc-plugin-config/ycm_extra_conf.py'
+" When set to '1', YCM's identifier completer will also collect identifiers from tags files
+let g:ycm_collect_identifiers_from_tags_files=1
+" When this option is set to '1', YCM's identifier completer will seed its identifier database
+" with the keywords of the programming language you're writing
+let g:ycm_seed_identifiers_with_syntax=1
+"When set to '1' YCM will ask once per '.ycm_extra_conf.py' file if it is safe to be loaded
+let g:ycm_confirm_extra_conf=1
+" When this option is set to '1', YCM will show the completion menu even when typing inside comments
+let g:ycm_complete_in_comments=1
+
+
+" ================================== Syntastic =============================================
+let g:syntastic_check_on_open=1
+let g:syntastic_cpp_include_dirs=['/usr/include/']
+let g:syntastic_cpp_remove_include_errors=1
+let g:syntastic_cpp_check_header=1
+let g:syntastic_cpp_compiler='clang++'
+let g:syntastic_cpp_compiler_options='-std=c++11 -stdlib=libstdc++'
+
+" set error or warning signs
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+
+" whether to show balloons
+let g:syntastic_enable_balloons=1
+
+" ignore check python files to enhance performance (cuz python has pylint to check *.py files)
+let g:syntastic_ignore_files=[".*\.py$"]
+
+
+" ==================================== Eclim ===============================================
+
+
 
 
 " ==========================================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

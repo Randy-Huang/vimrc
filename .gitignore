@@ -3,7 +3,15 @@ bundle/*
 *.bk
 .git
 .netrwhist
-.cscope.*
-tags
 sessions
 workbench.xmi
+
+#--Eclim--
+plugin
+eclim
+workbench.xmi
+
+#--tags--
+tags
+.cscope.*
+gtags

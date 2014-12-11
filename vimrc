@@ -79,7 +79,7 @@ set softtabstop=4
 set shiftwidth=4
 au FileType Makefile set noexpandtab
 
-" ============================= Disable Sound Errors =====================================
+" =============================== Disable Sound Errors =====================================
 set noerrorbells
 set novisualbell
 set t_vb=
@@ -92,7 +92,7 @@ set background=dark
 set t_Co=256                            " 256 color mod
 colorscheme solarized     	        " terminal color settings
 
-if has("gui_running")			" Set colors and fonts when running in GUI mode
+if has("gui_running")			" set colors and fonts when running in GUI mode
     set guifont=Osaka-Mono:h20
     set background=dark 
     set guioptions-=T
@@ -101,7 +101,7 @@ if has("gui_running")			" Set colors and fonts when running in GUI mode
     highlight CursorLine guibg=#003853 ctermbg=24 gui=none cterm=none
 endif
 
-set ffs=unix,dos,mac 		        " Use Unix as the standard file type
+set ffs=unix,dos,mac 		        "uUse Unix as the standard file type
 
 " =================================== Status Line ==========================================
 set laststatus=2
@@ -111,16 +111,16 @@ set statusline+=\ \ \ %<%20.30(%{hostname()}:%{CurDir()}%)\
 set statusline+=%=%-10.(%l,%c%V%)\ %p%%/%L
 
 function! CurDir()
-    let curdir = substitute(getcwd(), $HOME, "~", "")
-    return curdir
+let curdir = substitute(getcwd(), $HOME, "~", "")
+return curdir
 endfunction
 
 function! HasPaste()
-    if &paste
-        return '[PASTE]'
-    else
-        return ''
-    endif
+if &paste
+    return '[PASTE]'
+else
+    return ''
+endif
 endfunction
 
 " ============================= C/C++ Specific Settings ====================================
@@ -148,21 +148,21 @@ nmap <unique> <leader>] :cnext<CR>          " move to the next error
 command! -bang -nargs=? QFix call QFixToggle(<bang>0)
 
 function! QFixToggle(forced)
-    if exists("g:qfix_win") && a:forced != 0
-        cclose
+if exists("g:qfix_win") && a:forced != 0
+    cclose
+else
+    if exists("g:my_quickfix_win_height")
+        execute "copen ".g:my_quickfix_win_height
     else
-        if exists("g:my_quickfix_win_height")
-            execute "copen ".g:my_quickfix_win_height
-        else
-            copen
-        endif
+        copen
     endif
+endif
 endfunction
 
 augroup QFixToggle
-    autocmd!
-    autocmd BufWinEnter quickfix let g:qfix_win = bufnr("$")
-    autocmd BufWinLeave * if exists("g:qfix_win") && expand("<abuf>") == g:qfix_win | unlet! g:qfix_win | endif
+autocmd!
+autocmd BufWinEnter quickfix let g:qfix_win = bufnr("$")
+autocmd BufWinLeave * if exists("g:qfix_win") && expand("<abuf>") == g:qfix_win | unlet! g:qfix_win | endif
 augroup END
 
 " ================================ Grep Key Mapping ========================================
@@ -237,16 +237,16 @@ inoremap <C-u>5 <esc>yypVr^A
 " ================================= Global Replace Mode  ===================================
 " Tip #382: Search for <cword> and replace with input() in all open buffers 
 fun! Replace() 
-    let s:word = input("Replace " . expand('<cword>') . " with:") 
-    :exe 'bufdo! %s/\<' . expand('<cword>') . '\>/' . s:word . '/ge' 
-    :unlet! s:word 
+let s:word = input("Replace " . expand('<cword>') . " with:") 
+:exe 'bufdo! %s/\<' . expand('<cword>') . '\>/' . s:word . '/ge' 
+:unlet! s:word 
 endfun 
 
 " ================================= Session Management =====================================
 " Restore cursor to file position in previous editing session
 " Return to last edit position when opening files 
 autocmd  BufReadPost * 
-    \ if line("'\"") > 0 | if line("'\"") <= line("$") |
+\ if line("'\"") > 0 | if line("'\"") <= line("$") |
     \ exe("norm '\"") |
     \ else | exe "norm $" |
     \ endif | endif
@@ -294,7 +294,7 @@ au BufNewFile,BufRead,BufEnter *.cpp,*.hpp set omnifunc=omni#cpp#complete#Main
 if has("autocmd") && exists("+omnifunc")
     autocmd Filetype *
     \ if &omnifunc == "" |
-    \     setlocal omnifunc=syntaxcomplete#Complete |
+    \     set omnifunc=syntaxcomplete#Complete |
     \ endif
 endif
 
@@ -588,7 +588,7 @@ if has("cscope")
 "    nmap <C-@>e :scs find e <C-R>=expand("<cword>")<CR><CR>	
 "    nmap <C-@>f :scs find f <C-R>=expand("<cfile>")<CR><CR>	
 "    nmap <C-@>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>	
-"    nmap <C-@>d :scs find d <C-R>=expand("<cword>")<CR><CR>	
+d"    nmap <C-@>d :scs find d <C-R>=expand("<cword>")<CR><CR>	
 
 " Hitting CTRL-space *twice* before the search type does a vertical 
 " split instead of a horizontal one (vim 6 and up only)
@@ -1001,21 +1001,86 @@ let g:unite_source_file_rec_max_depth=10 " the max depth of project folder
 let g:unite_source_history_yank_enable=1 " if defined and not 0, unite enables
 
 " ============================== YouCompleteMe =============================================
+set completeopt-=preview
+
 " YCM searches for a '.ycm_extra_conf.py' file for compilation flags
 let g:ycm_global_ycm_extra_conf='/home/randy-huang/.vim/vimrc-plugin-config/ycm_extra_conf.py'
+
 " When set to '1', YCM's identifier completer will also collect identifiers from tags files
 let g:ycm_collect_identifiers_from_tags_files=1
+
 " When this option is set to '1', YCM's identifier completer will seed its identifier database
 " with the keywords of the programming language you're writing
 let g:ycm_seed_identifiers_with_syntax=1
-"When set to '1' YCM will ask once per '.ycm_extra_conf.py' file if it is safe to be loaded
+
+" When set to '1' YCM will ask once per '.ycm_extra_conf.py' file if it is safe to be loaded
 let g:ycm_confirm_extra_conf=1
-" When this option is set to '1', YCM will show the completion menu even when typing inside comments
+
+" When set to '1', YCM will show the completion menu even when typing inside comments
 let g:ycm_complete_in_comments=1
 
+" This option controls the number of characters the user needs to type before 
+" identifier-based completion suggestions are triggered
+let g:ycm_min_num_of_chars_for_completion=2
+
+" This option controls the key mappings used to select the first completion string,
+" invoking any of them repeatedly cycles forward through the completion list
+let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', ]
+
+" This option controls the key mapping used to invoke completion menu for semantic completion
+" By default, semantic completion is trigged automatically after typing ., -> and :: 
+" in insert mode (if semantic completion support has been compiled in). 
+" This key mapping can be used to trigger semantic completion anywhere
+let g:ycm_key_invoke_completion = '<C-Space>'
+
+" Disable YCM's syntastic function
+let g:ycm_show_diagnostics_ui=0
+
+" This option controls the character-based triggers for the various semantic completion engines
+let g:ycm_semantic_triggers={
+    \ 'c' : ['->', '.'],
+    \ 'objc' : ['->', '.'],
+    \ 'cpp,objcpp' : ['->', '.', '::'],
+    \ 'perl' : ['->'],
+    \ 'php' : ['->', '::'],
+    \ 'cs,java,javascript,d,vim,ruby,python,perl6,scala,vb,elixir,go' : ['.'],
+    \ 'lua' : ['.', ':'],
+    \ 'erlang' : [':'],
+    \ }
+
+" This option controls for which Vim filetypes (see ':h filetype') should YCM be turned off
+let g:ycm_filetype_blacklist={
+    \ 'tagbar' : 1,
+    \ 'qf' : 1,
+    \ 'notes' : 1,
+    \ 'markdown' : 1,
+    \ 'unite' : 1,
+    \ 'text' : 1,
+    \ 'gitcommit' : 1,
+    \ 'pandoc' : 1,
+    \ 'infolog' : 1,
+    \ 'mail' : 1
+    \ }
+     
+" This option controls for which Vim filetypes (see ':h filetype') should YCM be turned on
+let g:ycm_filetype_whitelist={ 
+    \ 'c' : 1, 
+    \ 'cpp' : 1,
+    \ 'h' : 1,
+    \ 'java' : 1,
+    \ 'mk' : 1,
+    \ 'sh' : 1,
+    \ 'vim' : 1,
+    \ }
 
 " ================================== Syntastic =============================================
+" If enabled then will do syntax checks when buffers are first loaded as well as on saving
 let g:syntastic_check_on_open=1
+
+" Tell syntastic to always stick any detected errors into the |location-list|
+let g:syntastic_always_populate_loc_list=1
+
+" cpp settings
 let g:syntastic_cpp_include_dirs=['/usr/include/']
 let g:syntastic_cpp_remove_include_errors=1
 let g:syntastic_cpp_check_header=1
@@ -1032,6 +1097,13 @@ let g:syntastic_enable_balloons=1
 " ignore check python files to enhance performance (cuz python has pylint to check *.py files)
 let g:syntastic_ignore_files=[".*\.py$"]
 
+" Use this option to fine tune when automatic syntax checking is done (or not done).
+" The mode can be mapped to one of two values - 'active' or 'passive'. When set to 'active',
+" syntastic does automatic checking whenever a buffer is saved or initially opened.  
+" When set to 'passive' syntastic only checks when the user calls |:SyntasticCheck|.
+let g:syntastic_mode_map={ 'mode': 'active',
+                         \ 'active_filetypes': ['c','cpp','java','h'],
+                         \ 'passive_filetypes': [] }
 
 " ==================================== Eclim ===============================================
 

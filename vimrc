@@ -47,7 +47,7 @@ set nobackup		" no *~ backup files
 set copyindent		" copy the previous indentation on autoindenting
 set ignorecase		" ignore case when searching
 set smartcase		" ignore case if search pattern is all lowercase, case-sensitive otherwise
-set mouse=a             " all previous modes
+set mouse=a             " all previous modes; or you can use "Shift" to copy your target string
 set nowrap              " not to break line
 set hidden              " when switch buffer not to warn except exist Vim
 set updatetime=500      " update after 500ms later

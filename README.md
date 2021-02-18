@@ -15,6 +15,11 @@ MANUALLY INSTALL
     
         cd ~/.vim
         ./auto-install.sh
-
-3. Complish all!
+        
+3. Compile YCM libiray        
+   * YCM offical homepage: 
+        www.github.com/ycm-core/YouCompleteMe
+        
+   * Compile YCM library
+        
 

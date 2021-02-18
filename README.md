@@ -16,7 +16,11 @@ MANUALLY INSTALL
         cd ~/.vim
         ./auto-install.sh
         
-**3. Compile YCM libiray**        
+**3. Install Cscope library**
+
+        sudo apt install cscope
+        
+**4. Compile YCM libiray**        
 * YCM offical homepage: www.github.com/ycm-core/YouCompleteMe
         
 * Now we start to use VIM before, we need to compile YCM library; for Ubuntu 16.04 and later for installing development tools:

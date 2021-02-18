@@ -29,5 +29,5 @@ MANUALLY INSTALL
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8        
                 
-* To simply compile with everything enabled, there's a '--all' flag 
+* To simply compile with everything enabled, there's a `--all` flag 
 

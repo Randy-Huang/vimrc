@@ -17,9 +17,9 @@ MANUALLY INSTALL
         ./auto-install.sh
         
 3. Compile YCM libiray        
-  * YCM offical homepage: www.github.com/ycm-core/YouCompleteMe
+   * YCM offical homepage: www.github.com/ycm-core/YouCompleteMe
         
- * Now we start to use VIM before, we need to compile YCM library; for Ubuntu 16.04 and later:
+   * Now we start to use VIM before, we need to compile YCM library; for Ubuntu 16.04 and later:
 
          sudo apt install build-essential cmake python3-dev
        

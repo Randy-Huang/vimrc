@@ -1,1 +1,1 @@
-/home/randyhuang/.vim/bundle/Solarized/colors/solarized.vim
+/home/randy_huang/.vim/bundle/Solarized/colors/solarized.vim

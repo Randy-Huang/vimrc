@@ -34,3 +34,4 @@ MANUALLY INSTALL
         cd ~/.vim/bundle/YouCompleteMe
         python3 install.py --all
 
+* That's it. You're done for installing YCM. Now you can start to use VIM!

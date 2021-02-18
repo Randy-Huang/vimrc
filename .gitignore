@@ -5,6 +5,7 @@ bundle/*
 .netrwhist
 sessions
 workbench.xmi
+colors/*
 
 #--Eclim--
 plugin

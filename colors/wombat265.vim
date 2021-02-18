@@ -1,1 +1,1 @@
-/home/randy_huang/.vim/bundle/wombat256.vim/colors/wombat256mod.vim
+/home/randyhuang/.vim/bundle/wombat256.vim/colors/wombat256mod.vim
